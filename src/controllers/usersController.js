@@ -1,16 +1,21 @@
-import { users, token, sessions,signUpSchema,signInSchema } from "../index.js"
+import { users, token, sessions, signUpSchema, signInSchema } from "../index.js"
 import bcrypt from "bcrypt";
 
 export async function postUser(req, res) {
 
-    const { name, email, password} = req.body
+    const { name, email, password } = req.body
     const validation = signUpSchema.validate(req.body);
 
     if (validation.error) {
         res.status(422).send("Todos os Campos São obrigatórios")
         return
-      }
+    }
     const criptPass = bcrypt.hashSync(password, 10);
+    const findUser = await users.findOne({ email })
+    if (findUser) {
+        res.status(409).send("Usuário já cadastrado")
+        return
+    }
 
     const obj = {
         name: name,
@@ -35,16 +40,16 @@ export async function loginUser(req, res) {
     if (validation.error) {
         res.status(422).send("Todos os Campos São obrigatórios")
         return
-      }
+    }
 
     try {
         const findUser = await users.findOne({ email })
         if (findUser && bcrypt.compareSync(password, findUser.password)) {
             const obj = {
                 token,
-                userId:  findUser._id
+                userId: findUser._id
             }
-            await  sessions.insertOne(obj)
+            await sessions.insertOne(obj)
             res.send(token)
         } else {
             res.status(401).send("usuário ou senha inválidos");
