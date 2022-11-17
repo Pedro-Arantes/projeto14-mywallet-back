@@ -53,11 +53,43 @@ export async function loginUser(req, res) {
             res.send(token)
         } else {
             res.status(401).send("usuário ou senha inválidos");
+            return
         }
     } catch (error) {
         console.log(error)
     }
 
+}
+
+export async function deleteSession(req,res){
+
+    const { authorization } = req.headers;
+    const token = authorization?.replace('Bearer ', '');
+
+    if (validation.error) {
+        res.status(422).send("Todos os Campos São obrigatórios")
+        return
+    }
+    if (!token) return res.sendStatus(401);
+    
+    try {
+        const session = await sessions.findOne({ token });
+
+        if (!session) {
+            return res.sendStatus(401);
+        }
+
+        let user = await users.findOne({
+            _id: session.userId
+        })
+        if (!user) return res.sendStatus(401);
+
+        await sessions.deleteOne({token})
+        res.status(200).send({ message: "Deslogado com sucesso!"})
+    } catch (error) {
+        console.log(error)
+    }
+        
 }
 
 

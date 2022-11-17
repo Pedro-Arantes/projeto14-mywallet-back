@@ -1,4 +1,4 @@
-import { postUser, loginUser } from "./controllers/usersController.js";
+import { postUser, loginUser,deleteSession } from "./controllers/usersController.js";
 import { postBalance, getBalance,sendStatus } from "./controllers/balancesController.js";
 import express from 'express';
 import cors from 'cors';
@@ -51,6 +51,7 @@ app.post("/sign-in", loginUser)
 app.post("/balance", postBalance)
 app.get("/balance", getBalance)
 app.post("/status", sendStatus)
+app.delete("/delete", deleteSession)
 
 
 app.listen(5000, () => {
