@@ -57,14 +57,14 @@ export async function getBalance(req, res) {
             return res.sendStatus(401);
         }
 
-        let user = await users.findOne({
+        const user = await users.findOne({
             _id: session.userId
         })
         if (!user) return res.sendStatus(401);
         const userId = session.userId
       
         const balance = await balances.find({ userId }).toArray()
-        res.status(200).send(balance)
+        res.status(200).send({balance,user: user.name})
         return
 
     } catch (error) {
