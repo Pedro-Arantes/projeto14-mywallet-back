@@ -1,16 +1,12 @@
-import { token, balances, balanceSchema, sessions, users } from "../index.js"
+import {  balances,  sessions, users} from "../database/db.js"
+import {day } from "../index.js";
 
 export async function postBalance(req, res) {
 
     const { value, description, type } = req.body;
-    const validation = balanceSchema.validate(req.body);
     const { authorization } = req.headers;
     const token = authorization?.replace('Bearer ', '');
-
-    if (validation.error) {
-        res.status(422).send("Todos os Campos São obrigatórios")
-        return
-    }
+    
     if (!token) return res.sendStatus(401);
     try {
         const session = await sessions.findOne({ token });
@@ -28,9 +24,10 @@ export async function postBalance(req, res) {
             user,
             value,
             description,
-            type
+            type,
+            day
         }
-
+        
         await balances.insertOne(obj);
         res.sendStatus(201);
         return
@@ -45,12 +42,13 @@ export async function postBalance(req, res) {
 }
 
 export async function getBalance(req, res) {
-
+    
     const { authorization } = req.headers;
     const token = authorization?.replace('Bearer ', '');
     if (!token) return res.sendStatus(401);
 
     try {
+        
         const session = await sessions.findOne({ token });
 
         if (!session) {
@@ -62,8 +60,9 @@ export async function getBalance(req, res) {
         })
         if (!user) return res.sendStatus(401);
         user = user.name
-        const balances = await balances.find({ user }).toArray()
-        res.status(200).send(balances)
+      
+        const balance = await balances.find({ user }).toArray()
+        res.status(200).send(balance)
         return
 
     } catch (error) {
@@ -100,4 +99,3 @@ export async function sendStatus(req, res) {
     }
 
 }
-

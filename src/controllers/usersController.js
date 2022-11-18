@@ -1,15 +1,11 @@
-import { users, token, sessions, signUpSchema, signInSchema } from "../index.js"
+import { users, sessions  } from "../database/db.js"
+import { token } from "../index.js";
 import bcrypt from "bcrypt";
 
 export async function postUser(req, res) {
 
     const { name, email, password } = req.body
-    const validation = signUpSchema.validate(req.body);
-
-    if (validation.error) {
-        res.status(422).send("Todos os Campos São obrigatórios")
-        return
-    }
+    
     const criptPass = bcrypt.hashSync(password, 10);
     const findUser = await users.findOne({ email })
     if (findUser) {
@@ -35,12 +31,7 @@ export async function postUser(req, res) {
 export async function loginUser(req, res) {
 
     const { email, password } = req.body
-    const validation = signInSchema.validate(req.body);
-
-    if (validation.error) {
-        res.status(422).send("Todos os Campos São obrigatórios")
-        return
-    }
+    
 
     try {
         const findUser = await users.findOne({ email })
@@ -66,10 +57,7 @@ export async function deleteSession(req,res){
     const { authorization } = req.headers;
     const token = authorization?.replace('Bearer ', '');
 
-    if (validation.error) {
-        res.status(422).send("Todos os Campos São obrigatórios")
-        return
-    }
+    
     if (!token) return res.sendStatus(401);
     
     try {
