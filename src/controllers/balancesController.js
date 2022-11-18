@@ -19,13 +19,15 @@ export async function postBalance(req, res) {
             _id: session.userId
         })
         if (!user) return res.sendStatus(401);
+        const userId = session.userId
         user = user.name
         const obj = {
             user,
             value,
             description,
             type,
-            day
+            day,
+            userId 
         }
         
         await balances.insertOne(obj);
@@ -59,9 +61,9 @@ export async function getBalance(req, res) {
             _id: session.userId
         })
         if (!user) return res.sendStatus(401);
-        user = user.name
+        const userId = session.userId
       
-        const balance = await balances.find({ user }).toArray()
+        const balance = await balances.find({ userId }).toArray()
         res.status(200).send(balance)
         return
 
