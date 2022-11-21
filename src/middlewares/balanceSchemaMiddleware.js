@@ -1,4 +1,4 @@
-import { balanceSchema } from "../index.js";
+import { balanceSchema } from "../models/balanceModel.js";
 
 export function balanceSchemaMd(req, res, next) {
 

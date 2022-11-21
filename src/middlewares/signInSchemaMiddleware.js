@@ -1,4 +1,4 @@
-import { signInSchema } from "../index.js";
+import { signInSchema } from "../models/signInModel.js";
 
 export function signInSchemaMd(req, res, next) {
 
